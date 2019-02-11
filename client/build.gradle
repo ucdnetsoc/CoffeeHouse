@@ -17,3 +17,7 @@ javafx {
 application {
 	mainClassName = 'coffeehouse.ClientApplication'
 }
+
+run {
+	standardInput = System.in
+}
