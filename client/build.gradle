@@ -1,0 +1,19 @@
+
+
+plugins {
+	id 'java'
+	id 'application'
+	id 'org.openjfx.javafxplugin' version '0.0.7'
+}
+
+repositories {
+    mavenCentral()
+}
+
+javafx {
+	version = "10.0.2"
+}
+
+application {
+	mainClassName = 'coffeehouse.ClientApplication'
+}
