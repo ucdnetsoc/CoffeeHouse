@@ -14,7 +14,7 @@ public class ServerApplication
        String str;
 
         try {
-            ServerSocket server = new ServerSocket(4444);
+            ServerSocket server = new ServerSocket(3000);
             s = server.accept();
             pw = new PrintWriter(s.getOutputStream(), true);
             br = new BufferedReader(new InputStreamReader(s.getInputStream()));
