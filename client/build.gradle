@@ -10,6 +10,10 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+	implementation 'com.google.code.gson:gson:2.8.5'
+}
+
 javafx {
 	version = "10.0.2"
 }
