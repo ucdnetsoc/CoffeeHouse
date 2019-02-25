@@ -1,17 +1,13 @@
 
 
 plugins {
-	id 'java'
 	id 'application'
 	id 'org.openjfx.javafxplugin' version '0.0.7'
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
 	implementation 'com.google.code.gson:gson:2.8.5'
+	implementation project(':shared')
 }
 
 javafx {

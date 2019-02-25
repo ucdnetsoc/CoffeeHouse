@@ -1,16 +1,30 @@
 package coffeehouse;
+
 import coffeehouse.net.Client;
+
 import java.net.UnknownHostException;
 
-public class ClientApplication
-{
-	public static void main(String[] args)
-	{
-		try {
-			Client client = new Client("192.168.0.10", 3000);
-			client.waitForThreads();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+public class ClientApplication {
+	public static void main(String[] args) {
+		if (args.length < 2) {
+			System.err.println("Insufficient arguments provided, usage: program <ip> <port>");
+			return;
 		}
+
+		String ip = args[0];
+		int port = Integer.parseInt(args[1]);
+		
+		Client client;
+		
+		try {
+			client = new Client(ip, port);
+		} catch (UnknownHostException e) {
+			System.err.println("Host not recognised.");
+			return;
+		}
+
+		client.waitForThreads();
+		client.close();
+
 	}
 }
