@@ -1,5 +1,6 @@
 package coffeehouse.net;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -21,17 +22,19 @@ public class ClientWriterThread extends Thread {
 		
 		Packet authPacket = new AuthPacket("myusername");
 		authPacket.writeJson(writer);
-
-		while (!socket.isClosed() && scanner.hasNextLine()) {
-			String line = scanner.nextLine();
-			
-			Packet packet = new ClientMessagePacket(line);
-			
-			packet.writeJson(writer);
-			
-			System.out.println(line);
+		try {
+			while (!socket.isClosed() && scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				
+				Packet packet = new ClientMessagePacket(line);
+								
+				packet.writeJson(writer);
+				writer.flush();
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
+		} finally {
+			scanner.close();
 		}
-
-		scanner.close();
 	}
 }
