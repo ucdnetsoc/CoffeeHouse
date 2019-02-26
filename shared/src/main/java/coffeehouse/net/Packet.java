@@ -6,26 +6,15 @@ import java.io.Writer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 public abstract class Packet {
-
-	public enum PacketType {
-		AUTH, CLIENT_MESSAGE, SERVER_MESSAGE;
-
-		public Class<? extends Packet> getPacketType() {
-			switch (this) {
-			case AUTH:
-				return AuthPacket.class;
-			default:
-				throw new IllegalArgumentException("Unhandled PacketType " + this.name());
-			}
-		}
-	}
 
 	public static class PacketAdapter extends TypeAdapter<Packet> {
 		@Override
@@ -96,10 +85,16 @@ public abstract class Packet {
 		return gson.fromJson(json, Packet.class);
 	}
 
-	public static Packet readPacket(Reader json) {
+	public static Packet readPacket(Reader json) throws BadPacketException {
 		Gson gson = new GsonBuilder().registerTypeAdapter(Packet.class, new PacketAdapter()).create();
 
-		return gson.fromJson(json, Packet.class);
+		try {
+			return gson.fromJson(json, Packet.class);
+		} catch(JsonSyntaxException e) {
+			throw new BadPacketException();
+		} catch(JsonIOException e) {
+			throw new BadPacketException();
+		}
 	}
 
 	public abstract PacketType getType();

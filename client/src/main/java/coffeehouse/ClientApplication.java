@@ -1,6 +1,7 @@
 package coffeehouse;
 
 import coffeehouse.net.Client;
+import coffeehouse.util.IOUtils;
 
 import java.net.UnknownHostException;
 
@@ -23,8 +24,9 @@ public class ClientApplication {
 			return;
 		}
 
-		client.waitForThreads();
-		client.close();
+		new ConsoleInputLoop(client).run();		
+		
+		IOUtils.closeQuietly(client);
 
 	}
 }
