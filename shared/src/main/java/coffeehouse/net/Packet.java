@@ -1,7 +1,6 @@
 package coffeehouse.net;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.Writer;
 
 import com.google.gson.Gson;
@@ -84,12 +83,13 @@ public abstract class Packet {
 
 		return gson.fromJson(json, Packet.class);
 	}
+	
+	public static Packet readPacket(JsonReader jsonReader) throws BadPacketException {
 
-	public static Packet readPacket(Reader json) throws BadPacketException {
 		Gson gson = new GsonBuilder().registerTypeAdapter(Packet.class, new PacketAdapter()).create();
 
 		try {
-			return gson.fromJson(json, Packet.class);
+			return gson.fromJson(jsonReader, Packet.class);
 		} catch(JsonSyntaxException e) {
 			throw new BadPacketException(e);
 		} catch(JsonIOException e) {

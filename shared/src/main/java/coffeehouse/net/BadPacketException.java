@@ -1,7 +1,5 @@
 package coffeehouse.net;
 
-import com.google.gson.JsonIOException;
-
 public class BadPacketException extends Exception {
 	public BadPacketException(Throwable cause) {
 		super(cause);
