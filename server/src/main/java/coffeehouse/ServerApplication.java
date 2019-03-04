@@ -1,7 +1,6 @@
 package coffeehouse;
 
 import java.io.*;
-import java.net.*;
 
 import coffeehouse.net.Server;
 
@@ -10,7 +9,7 @@ public class ServerApplication {
 
 		if (args.length < 1) {
 			System.err.println("Insufficient arguments provides, usage: program <port>");
-		}
+		}		
 
 		int port = Integer.parseInt(args[0]);
 

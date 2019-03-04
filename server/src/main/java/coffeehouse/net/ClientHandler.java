@@ -8,18 +8,24 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.Socket;
 
+import com.google.gson.stream.JsonReader;
+
 import coffeehouse.util.IOUtils;
 
 public class ClientHandler implements Runnable, Closeable {
 
 	private Socket socket;
 	private Reader reader;
+	private JsonReader jsonReader;
+	
 	private Writer writer;
 	
 	public ClientHandler(Socket socket) throws IOException {
 		this.socket = socket;
 		
 		this.reader = new InputStreamReader(socket.getInputStream());
+		this.jsonReader = new JsonReader(this.reader);
+		
 		this.writer = new OutputStreamWriter(socket.getOutputStream());
 	}
 	
@@ -45,16 +51,13 @@ public class ClientHandler implements Runnable, Closeable {
 	public void run() {
 		
 		try {
-			
 			while(!socket.isInputShutdown()) {
-				System.out.print("Reading...");
-				Packet packet = Packet.readPacket(reader);
+				Packet packet = Packet.readPacket(jsonReader);
 				
 				System.out.println(" found! Packet type is " + packet.getType());
 				
 				handlePacket(packet);
 			}
-			
 		} catch(Exception e) {
 			System.err.println("Session with socket " + socket + " was closed due to exception following exception.");
 			e.printStackTrace();
@@ -63,7 +66,6 @@ public class ClientHandler implements Runnable, Closeable {
 			IOUtils.closeQuietly(reader);
 			IOUtils.closeQuietly(socket);
 		}
-		
 	}
 	
 	public boolean isOpen() {
@@ -72,9 +74,10 @@ public class ClientHandler implements Runnable, Closeable {
 
 	@Override
 	public void close() throws IOException {
-		
-		
-		
+		jsonReader.close();
+		reader.close();
+		writer.close();
+		socket.close();
 	}
 	
 }
