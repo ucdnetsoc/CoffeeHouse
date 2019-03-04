@@ -53,7 +53,7 @@ public class Client implements Closeable {
 			System.err.println("Socket dropped due to following error: ");
 			e.printStackTrace();
 			
-			IOUtils.closeQuietly(this);;
+			IOUtils.closeQuietly(this);
 		}
 	}
 

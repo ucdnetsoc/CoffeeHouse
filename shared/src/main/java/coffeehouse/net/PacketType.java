@@ -7,6 +7,10 @@ public enum PacketType {
 		switch (this) {
 		case AUTH:
 			return AuthPacket.class;
+		case CLIENT_MESSAGE:
+			return ClientMessagePacket.class;
+		case SERVER_MESSAGE:
+			//return ServerMessagePacket.class;
 		default:
 			throw new IllegalArgumentException("Unhandled PacketType " + this.name());
 		}
