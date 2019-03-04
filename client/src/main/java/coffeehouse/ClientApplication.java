@@ -1,6 +1,7 @@
 package coffeehouse;
 
 import coffeehouse.net.Client;
+import coffeehouse.util.IOUtils;
 import javafx.application.Application;
 import java.net.UnknownHostException;
 import javafx.application.Application;
@@ -30,9 +31,11 @@ public class ClientApplication extends Application {
 			System.err.println("Host not recognised.");
 			return;
 		}
+
+		new ConsoleInputLoop(client).run();		
+		
 		launch(args);
-		client.waitForThreads();
-		client.close();
+		IOUtils.closeQuietly(client);
 
 	}
 

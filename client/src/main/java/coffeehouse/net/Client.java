@@ -4,49 +4,61 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Client {
+import coffeehouse.util.IOUtils;
+
+public class Client implements Closeable {
 	private Socket socket;
 	
-	private OutputStream serverOut;
-	private InputStream serverIn;
-	
-	private Thread readThread, writeThread;
+	private Thread readThread;
+	private Writer writer;
 	
 	public Client(String serverHost, int serverPort) throws UnknownHostException
 	{
 		try {
 			socket = new Socket(serverHost, serverPort);
 			
-			serverOut = socket.getOutputStream();
-			serverIn = socket.getInputStream();
+			readThread = new Thread(new ClientSocketReader(this, socket));
+			writer = new OutputStreamWriter(socket.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
+			return;
 		}
-		
-		readThread = new ClientReaderThread(socket, serverIn);
-		writeThread = new ClientWriterThread(socket, serverOut);
 		
 		readThread.start();
-		writeThread.start();
+	}
+	
+	
+	@Override
+	public void close() throws IOException {
 		
-	}
-	
-	public void waitForThreads() {
-		try {
-			readThread.join();
-			writeThread.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(readThread != null && readThread.isAlive()) {
+			readThread.interrupt();
 		}
-	}
-	
-	public void close() {
-		try {
+		
+		if(socket != null) {
 			socket.close();
-		} catch(IOException e)
-		{
-			e.printStackTrace();
 		}
+	}
+
+
+	public boolean isOpen() {
+		return !socket.isClosed();
+	}
+	
+	public void sendPacket(Packet p) {
+		p.writeJson(writer);
+		try {
+			writer.flush();
+		} catch (IOException e) {
+			System.err.println("Socket dropped due to following error: ");
+			e.printStackTrace();
+			
+			IOUtils.closeQuietly(this);
+		}
+	}
+
+
+	public void sendMessage(String message) {
+		sendPacket(new ClientMessagePacket(message));
 	}
 }
