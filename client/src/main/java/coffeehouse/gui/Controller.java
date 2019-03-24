@@ -1,4 +1,4 @@
-package sample;
+package coffeehouse.gui;
 
 public class Controller {
 }
