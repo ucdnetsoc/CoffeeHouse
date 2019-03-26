@@ -2,10 +2,14 @@ package coffeehouse.gui;
 
 import coffeehouse.ClientApplication;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
 
 public class LoginController {
 	@FXML
@@ -35,7 +39,24 @@ public class LoginController {
 
 				loginButton.setText("Clicked"); // Something to show that this was run
 
-				clientApp.login(ip, port, username);
+				try {
+					clientApp.login(ip, port, username);
+				} catch(UnknownHostException e) {
+					Alert alert = new Alert(Alert.AlertType.INFORMATION);
+					alert.setTitle("Unknown Address!");
+					alert.setHeaderText("Please enter a valid server address.");
+
+					alert.showAndWait();
+				} catch(Exception e) {
+					Alert alert = new Alert(Alert.AlertType.INFORMATION);
+					alert.setTitle("Unknown error!");
+					alert.setHeaderText("An error occurred connecting to server.");
+					alert.setContentText(e + " thrown while attempting to login to server. See logs for details.");
+
+					e.printStackTrace();
+
+					alert.showAndWait();
+				}
 			}
 		});
 	}

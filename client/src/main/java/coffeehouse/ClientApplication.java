@@ -1,13 +1,22 @@
 package coffeehouse;
 
 import coffeehouse.gui.LoginController;
+import coffeehouse.net.AuthPacket;
+import coffeehouse.net.Client;
+import coffeehouse.util.IOUtils;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 public class ClientApplication extends Application {
+
+    private Client client;
+
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -34,8 +43,22 @@ public class ClientApplication extends Application {
 		primaryStage.show();
 	}
 
-	public void login(String ip, int port, String username)
-    {
-        // TODO: implement
+	public void logout() {
+        IOUtils.closeQuietly(client);
+        client = null;
+    }
+
+	public void login(String ip, int port, String username) throws UnknownHostException, IOException {
+        if(client != null)
+        {
+            logout();
+        }
+
+        client = new Client(ip, port);
+
+        client.sendPacket(new AuthPacket(username));
+
+        // TODO: setup event handlers
+
     }
 }
