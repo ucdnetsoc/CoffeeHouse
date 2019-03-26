@@ -3,10 +3,15 @@ package coffeehouse;
 import coffeehouse.net.Client;
 import coffeehouse.util.IOUtils;
 import javafx.application.Application;
+
+import java.io.IOException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
@@ -14,46 +19,21 @@ import javafx.stage.Stage;
 
 public class ClientApplication extends Application {
 	public static void main(String[] args) {
-		//if (args.length < 2) {
-		//	System.err.println("Insufficient arguments provided, usage: program <ip> <port>");
-		//	return;
-		//}
-
-
-		String ip = "127.0.0.1";
-		int port = Integer.parseInt("3000");
-		
-		Client client;
-		
-		try {
-			client = new Client(ip, port);
-		} catch (UnknownHostException e) {
-			System.err.println("Host not recognised.");
-			return;
-		}
-
-		new ConsoleInputLoop(client).run();		
-		
 		launch(args);
-		IOUtils.closeQuietly(client);
-
 	}
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Hello World!");
-		Button btn = new Button();
-		btn.setText("Say 'Hello World'");
-		btn.setOnAction(new EventHandler<ActionEvent>() {
+        Parent root;
+        try {
+            URL resourceUrl = getClass().getResource("/coffeehouse/gui/Login.fxml");
+            root = FXMLLoader.load(resourceUrl);
+        } catch(Exception e) {
+            System.err.println("Exception while fetching Login.fxml");
+            e.printStackTrace();
+            return;
+        }
 
-			@Override
-			public void handle(ActionEvent event) {
-				System.out.println("Hello World!");
-			}
-		});
-
-		StackPane root = new StackPane();
-		root.getChildren().add(btn);
 		primaryStage.setScene(new Scene(root, 300, 250));
 		primaryStage.show();
 	}
