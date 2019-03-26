@@ -18,6 +18,16 @@ public class Client implements Closeable {
 			socket = new Socket(serverHost, serverPort);
 			
 			readThread = new Thread(new ClientSocketReader(this, socket));
+			
+			readThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+				
+				@Override
+				public void uncaughtException(Thread t, Throwable e) {
+					System.err.println("Uncaught " + e + " in client read thread");
+					e.printStackTrace();
+					IOUtils.closeQuietly(Client.this);
+				}
+			});
 			writer = new OutputStreamWriter(socket.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
