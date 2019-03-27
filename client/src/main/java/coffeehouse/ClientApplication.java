@@ -1,60 +1,64 @@
 package coffeehouse;
 
+import coffeehouse.gui.LoginController;
+import coffeehouse.net.AuthPacket;
 import coffeehouse.net.Client;
 import coffeehouse.util.IOUtils;
 import javafx.application.Application;
-import java.net.UnknownHostException;
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 public class ClientApplication extends Application {
+
+    private Client client;
+
 	public static void main(String[] args) {
-		//if (args.length < 2) {
-		//	System.err.println("Insufficient arguments provided, usage: program <ip> <port>");
-		//	return;
-		//}
-
-
-		String ip = "127.0.0.1";
-		int port = Integer.parseInt("3000");
-		
-		Client client;
-		
-		try {
-			client = new Client(ip, port);
-		} catch (UnknownHostException e) {
-			System.err.println("Host not recognised.");
-			return;
-		}
-
-		new ConsoleInputLoop(client).run();		
-		
 		launch(args);
-		IOUtils.closeQuietly(client);
-
 	}
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Hello World!");
-		Button btn = new Button();
-		btn.setText("Say 'Hello World'");
-		btn.setOnAction(new EventHandler<ActionEvent>() {
+        Parent root;
+        LoginController controller;
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("gui/Login.fxml"));
+            root = fxmlLoader.load();
+            controller = fxmlLoader.getController();
+        } catch(Exception e) {
+            System.err.println("Exception while fetching Login.fxml");
+            e.printStackTrace();
+            return;
+        }
+        if(controller != null)
+            controller.setClientApp(this);
+        else
+            System.err.println("controller is null");
 
-			@Override
-			public void handle(ActionEvent event) {
-				System.out.println("Hello World!");
-			}
-		});
-
-		StackPane root = new StackPane();
-		root.getChildren().add(btn);
 		primaryStage.setScene(new Scene(root, 300, 250));
 		primaryStage.show();
 	}
+
+	public void logout() {
+        IOUtils.closeQuietly(client);
+        client = null;
+    }
+
+	public void login(String ip, int port, String username) throws UnknownHostException, IOException {
+        if(client != null)
+        {
+            logout();
+        }
+
+        client = new Client(ip, port);
+
+        client.sendPacket(new AuthPacket(username));
+
+        // TODO: setup event handlers
+
+    }
 }
