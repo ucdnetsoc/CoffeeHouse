@@ -50,42 +50,39 @@ public class LoginController {
 
 	@FXML
 	public void initialize() {
-		loginButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				String ip = serverIpField.getText();
-				String username = usernameField.getText();
+		loginButton.setOnMouseClicked( event -> {
+			String ip = serverIpField.getText();
+			String username = usernameField.getText();
 
-				String components[] = ip.split(":");
+			String[] components = ip.split(":");
 
-				int port = 3000;
+			int port = 3000;
 
-				try {
+			try {
 
-					if(components.length > 2)
-					{
-						throw new UnknownHostException();
-					}
-					else if(components.length == 2) {
-						try {
-							port = Integer.parseUnsignedInt(components[1]);
-						} catch (NumberFormatException e) {
-							throw new UnknownHostException("Invalid port");
-						}
-						if (port > 65535) {
-							throw new UnknownHostException("Invalid port");
-						}
-						ip = components[0];
-					}
-
-					InetAddress addr = InetAddress.getByName(ip);
-
-					clientApp.login(addr.getHostAddress(), port, username);
-				} catch(UnknownHostException e) {
-					showError(e);
-				} catch(Exception e) {
-					showError(e);
+				if(components.length > 2)
+				{
+					throw new UnknownHostException();
 				}
+				else if(components.length == 2) {
+					try {
+						port = Integer.parseUnsignedInt(components[1]);
+					} catch (NumberFormatException e) {
+						throw new UnknownHostException("Invalid port");
+					}
+					if (port > 65535) {
+						throw new UnknownHostException("Invalid port");
+					}
+					ip = components[0];
+				}
+
+				InetAddress addr = InetAddress.getByName(ip);
+
+				clientApp.login(addr.getHostAddress(), port, username);
+			} catch(UnknownHostException e) {
+				showError(e);
+			} catch(Exception e) {
+				showError(e);
 			}
 		});
 	}
