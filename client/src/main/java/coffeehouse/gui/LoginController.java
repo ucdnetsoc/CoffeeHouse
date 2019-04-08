@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class LoginController {
@@ -23,6 +24,30 @@ public class LoginController {
 
 	private ClientApplication clientApp;
 
+	private void showError(Exception e)
+	{
+		e.printStackTrace();
+
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("Unknown error!");
+		alert.setHeaderText("An error occurred connecting to server.");
+		alert.setContentText(e + " thrown while attempting to login to server. See logs for details.");
+
+		e.printStackTrace();
+
+		alert.showAndWait();
+	}
+
+	private void showError(UnknownHostException e)
+	{
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("Unknown Address!");
+		alert.setHeaderText("Please enter a valid server address.");
+		alert.setContentText(e.getLocalizedMessage());
+
+		alert.showAndWait();
+	}
+
 	@FXML
 	public void initialize() {
 		loginButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -31,31 +56,35 @@ public class LoginController {
 				String ip = serverIpField.getText();
 				String username = usernameField.getText();
 
-				// TODO: Check if ip and username are valid format
+				String components[] = ip.split(":");
 
 				int port = 3000;
 
-				// TODO: if ip contains port (e.g. 192.168.0.10:3000) use that instead
-
-				loginButton.setText("Clicked"); // Something to show that this was run
-
 				try {
-					clientApp.login(ip, port, username);
+
+					if(components.length > 2)
+					{
+						throw new UnknownHostException();
+					}
+					else if(components.length == 2) {
+						try {
+							port = Integer.parseUnsignedInt(components[1]);
+						} catch (NumberFormatException e) {
+							throw new UnknownHostException("Invalid port");
+						}
+						if (port > 65535) {
+							throw new UnknownHostException("Invalid port");
+						}
+						ip = components[0];
+					}
+
+					InetAddress addr = InetAddress.getByName(ip);
+
+					clientApp.login(addr.getHostAddress(), port, username);
 				} catch(UnknownHostException e) {
-					Alert alert = new Alert(Alert.AlertType.INFORMATION);
-					alert.setTitle("Unknown Address!");
-					alert.setHeaderText("Please enter a valid server address.");
 
-					alert.showAndWait();
 				} catch(Exception e) {
-					Alert alert = new Alert(Alert.AlertType.INFORMATION);
-					alert.setTitle("Unknown error!");
-					alert.setHeaderText("An error occurred connecting to server.");
-					alert.setContentText(e + " thrown while attempting to login to server. See logs for details.");
-
-					e.printStackTrace();
-
-					alert.showAndWait();
+					showError(e);
 				}
 			}
 		});
