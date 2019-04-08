@@ -82,7 +82,7 @@ public class LoginController {
 
 					clientApp.login(addr.getHostAddress(), port, username);
 				} catch(UnknownHostException e) {
-
+					showError(e);
 				} catch(Exception e) {
 					showError(e);
 				}
