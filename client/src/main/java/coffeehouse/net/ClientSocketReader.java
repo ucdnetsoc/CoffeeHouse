@@ -3,6 +3,7 @@ package coffeehouse.net;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.Socket;
 
 import com.google.gson.stream.JsonReader;
@@ -36,7 +37,7 @@ public class ClientSocketReader implements Runnable {
 			e.printStackTrace();
 		} finally {
 			IOUtils.closeQuietly(reader);
-			IOUtils.closeQuietly(socket);
+			IOUtils.closeQuietly(client);
 		}
 	}
 }
