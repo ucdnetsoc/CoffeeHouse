@@ -91,9 +91,9 @@ public abstract class Packet {
 		try {
 			return gson.fromJson(jsonReader, Packet.class);
 		} catch(JsonSyntaxException e) {
-			throw new BadPacketException();
+			throw new BadPacketException(e);
 		} catch(JsonIOException e) {
-			throw new BadPacketException();
+			throw new BadPacketException(e);
 		}
 	}
 

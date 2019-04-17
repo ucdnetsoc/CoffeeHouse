@@ -23,7 +23,6 @@ public class ClientSocketReader implements Runnable {
 		this.socket = socket;
 		this.reader = new InputStreamReader(socket.getInputStream());
 		this.jsonReader = new JsonReader(this.reader);
-		
 	}
 
 	public void run() {
