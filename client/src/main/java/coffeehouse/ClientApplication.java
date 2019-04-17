@@ -1,6 +1,7 @@
 package coffeehouse;
 
 import coffeehouse.gui.LoginController;
+import coffeehouse.gui.MainController;
 import coffeehouse.net.AuthPacket;
 import coffeehouse.net.Client;
 import coffeehouse.util.IOUtils;
@@ -16,6 +17,7 @@ import java.net.UnknownHostException;
 public class ClientApplication extends Application {
 
     private Client client;
+    private Stage primaryStage;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -23,6 +25,9 @@ public class ClientApplication extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
+
+	    this.primaryStage = primaryStage;
+
         Parent root;
         LoginController controller;
         try {
@@ -58,7 +63,21 @@ public class ClientApplication extends Application {
 
         client.sendPacket(new AuthPacket(username));
 
-        // TODO: setup event handlers
+        MainController controller;
+        Parent root;
+
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("gui/Main.fxml"));
+            root = fxmlLoader.load();
+            controller = fxmlLoader.getController();
+        } catch(Exception e) {
+            System.err.println("Exception while fetching Main.fxml");
+            e.printStackTrace();
+            return;
+        }
+
+        primaryStage.setScene(new Scene(root));
+        primaryStage.show();
 
     }
 }
